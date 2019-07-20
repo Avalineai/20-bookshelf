@@ -9,8 +9,8 @@ export default {
         return axios.get(`https://www.googleapis.com/books/v1/volumes?q=kittens`)
     },
     // Gets the book with the given id
-    searchBookId: function (id) {
-        return axios.get("/api/books/" + id);
+    getBook: function () {
+        return axios.get("/api/books/");
     },
     // Deletes the book with the given id
     deleteBook: function (id) {

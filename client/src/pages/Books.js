@@ -57,16 +57,20 @@ class Books extends Component {
   };
 
   handleSave = book => {
-    console.log(book)
-
+    console.log("save a book?", book)
     API.saveBook({
-      author: book.volumeInfo.authors.join(', '),
+      author: [book.volumeInfo.authors],
       description: book.volumeInfo.description,
       image: book.volumeInfo.imageLinks.smallThumbnail,
       link: book.volumeInfo.previewLink,
       title: book.volumeInfo.title
     })
+    .then(
+      res => console.log(res.data)
+    )
+      .catch(err => console.log(err))
   }
+
 
   render() {
     return (
@@ -102,14 +106,20 @@ class Books extends Component {
                     <div className="card mb-3">
                       <div className="row no-gutters">
                         <div className="col-md-4">
-                          <img style={styles.image} src={book.volumeInfo.imageLinks.smallThumbnail} className="card-img" alt="..."></img>
+                          <img style={styles.image} src={(
+                            "imageLinks" in book.volumeInfo) ?
+                            book.volumeInfo.imageLinks.smallThumbnail : ""
+                            } className="card-img" alt={book.volumeInfo.title}></img>
                         </div>
                         <div className="col-md-8">
                           <div className="card-body">
-                            <h5 className="card-title">{book.volumeInfo.title} by {book.volumeInfo.authors.join(', ')}</h5>
+                            <h5 className="card-title">{book.volumeInfo.title} by {
+                              ("authors" in book.volumeInfo) ?
+                              book.volumeInfo.authors.join(", ") : ""
+                            }</h5>
                             <p className="card-text">{book.volumeInfo.description}</p>
                             <button><a href={book.volumeInfo.previewLink}> View</a></button>
-                            <button>Save</button>
+                            <button onClick={() => this.handleSave(book)}>Save</button>
                           </div>
                         </div>
                       </div>
