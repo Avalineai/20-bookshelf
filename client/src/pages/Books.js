@@ -59,7 +59,7 @@ class Books extends Component {
   handleSave = book => {
     console.log("save a book?", book)
     API.saveBook({
-      author: [book.volumeInfo.authors],
+      author: book.volumeInfo.authors,
       description: book.volumeInfo.description,
       image: book.volumeInfo.imageLinks.smallThumbnail,
       link: book.volumeInfo.previewLink,
