@@ -7,14 +7,16 @@ import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, TextArea, FormBtn } from "../components/Form";
 
+const styles = {
+  image: {
+    width: "200px"
+  }
+}
+
 class Books extends Component {
   state = {
-    books: [],
-    author: "",
-    description: "",
-    image: "",
-    link: "",
-    title: "",
+    search: "",
+    results: []
   };
 
   componentDidMount() {
@@ -27,11 +29,11 @@ class Books extends Component {
     //     this.setState({ books: res.data, title: "", author: "", synopsis: "" })
     //   )
     //   .catch(err => console.log(err));
-      API.onPageLoad()
-        .then(res => //this.setState({ results: res.data.items }),
-          console.log(res.data.items))
-        
-        .catch(err => console.log(err))
+    API.onPageLoad()
+      .then(res => (this.setState({ results: res.data.items }),
+        console.log(res.data.items)))
+
+      .catch(err => console.log(err))
   };
 
   deleteBook = id => {
@@ -87,9 +89,9 @@ class Books extends Component {
             </form>
           </Col >
           <Col size="md-12">
+
             <List>
-            <p>Results</p>
-            <>
+              {/* <>
               <div>
                 <p>Title</p>
                 <p>Author</p>
@@ -98,8 +100,34 @@ class Books extends Component {
                 <button>View</button>
                 <button>Save</button>
               </div>
-            </>
+            </> */}
+              <p>Results</p>
+              {this.state.results.map(book => (
+                <ListItem key={book.id}>
+                  
+                    <div className="card mb-3">
+                      <div className="row no-gutters">
+                        <div className="col-md-4">
+                          <img style={styles.image} src={book.volumeInfo.imageLinks.smallThumbnail} className="card-img" alt="..."></img>
+                        </div>
+                        <div className="col-md-8">
+                          <div className="card-body">
+                            <h5 className="card-title">{book.volumeInfo.title} by {book.volumeInfo.authors}</h5>
+                            <p className="card-text">{book.volumeInfo.description}</p>
+                            <button><a href={book.volumeInfo.previewLink}> View</a></button>
+                            <button>Save</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </ListItem>
 
+
+
+
+
+
+              ))}
 
             </List>
 
