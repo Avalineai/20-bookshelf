@@ -22,11 +22,12 @@ class Saved extends Component {
     }
 
     loadBooks = () => {
-        // API.getBooks()
-        //     .then(res =>
-        //         this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-        //     )
-        //     .catch(err => console.log(err));
+        API.searchBooks()
+        .then(res =>
+          (this.setState({ books: res.data.items }),
+          console.log("search data", res.data.items))
+        )
+        .catch(err => console.log(err));
     };
 
     deleteBook = id => {
@@ -69,8 +70,8 @@ class Saved extends Component {
                             <List>
                                 <p>Saved Books</p>
                                 {this.state.books.map(book => (
-                                    <ListItem key={book._id}>
-                                        <Link to={"/books/" + book._id}>
+                                    <ListItem key={book.id}>
+                                        <Link to={"/books/" + book.id}>
                                             <strong>
                                                 {book.title} by {book.author}
                                             </strong>

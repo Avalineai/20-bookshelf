@@ -1,15 +1,14 @@
 import React, { Component } from "react";
-// import DeleteBtn from "../components/DeleteBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
-import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import { Input, FormBtn } from "../components/Form";
 
 const styles = {
   image: {
-    width: "200px"
+    width: "180px",
+    padding: "20px 0px 20px 20px",
   }
 }
 
@@ -23,16 +22,19 @@ class Books extends Component {
     this.loadBooks();
   }
 
+  getBooks = (userInput) => {
+    API.searchBooks(userInput)
+    .then(res =>
+      (this.setState({ results: res.data.items }),
+      console.log("search data", res.data.items))
+    )
+    .catch(err => console.log(err));
+  }
+
   loadBooks = () => {
-    // API.getBooks()
-    //   .then(res =>
-    //     this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-    //   )
-    //   .catch(err => console.log(err));
     API.onPageLoad()
       .then(res => (this.setState({ results: res.data.items }),
         console.log(res.data.items)))
-
       .catch(err => console.log(err))
   };
 
@@ -51,16 +53,20 @@ class Books extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
-      API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        description: this.state.description
-      })
-        .then(res => this.loadBooks())
-        .catch(err => console.log(err));
-    }
+    this.getBooks(this.state.search)
   };
+
+  handleSave = book => {
+    console.log(book)
+
+    API.saveBook({
+      author: book.volumeInfo.authors.join(', '),
+      description: book.volumeInfo.description,
+      image: book.volumeInfo.imageLinks.smallThumbnail,
+      link: book.volumeInfo.previewLink,
+      title: book.volumeInfo.title
+    })
+  }
 
   render() {
     return (
@@ -75,14 +81,13 @@ class Books extends Component {
               <h3>Book Search</h3>
               <p>Book</p>
               <Input
-                value={this.state.title}
+                value={this.state.search}
                 onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
+                name="search"
+                placeholder="Search Term (required)"
               />
               <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
+                handleFormSubmit={this.handleFormSubmit}
               >
                 Search
               </FormBtn>
@@ -91,20 +96,9 @@ class Books extends Component {
           <Col size="md-12">
 
             <List>
-              {/* <>
-              <div>
-                <p>Title</p>
-                <p>Author</p>
-                <p>Image Here</p>
-                <p>Description</p>
-                <button>View</button>
-                <button>Save</button>
-              </div>
-            </> */}
               <p>Results</p>
               {this.state.results.map(book => (
                 <ListItem key={book.id}>
-                  
                     <div className="card mb-3">
                       <div className="row no-gutters">
                         <div className="col-md-4">
@@ -112,7 +106,7 @@ class Books extends Component {
                         </div>
                         <div className="col-md-8">
                           <div className="card-body">
-                            <h5 className="card-title">{book.volumeInfo.title} by {book.volumeInfo.authors}</h5>
+                            <h5 className="card-title">{book.volumeInfo.title} by {book.volumeInfo.authors.join(', ')}</h5>
                             <p className="card-text">{book.volumeInfo.description}</p>
                             <button><a href={book.volumeInfo.previewLink}> View</a></button>
                             <button>Save</button>
@@ -121,16 +115,8 @@ class Books extends Component {
                       </div>
                     </div>
                 </ListItem>
-
-
-
-
-
-
               ))}
-
             </List>
-
           </Col>
         </Row>
       </Container>
